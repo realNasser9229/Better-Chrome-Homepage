@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab - Material Glass</title>
+    <style>
+        /* --- Material You & Glass Variables --- */
+        :root {
+            /* Glass Parameters */
+            --glass-surface: rgba(255, 255, 255, 0.1);
+            --glass-surface-hover: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-border-light: rgba(255, 255, 255, 0.4);
+            --blur-md: blur(20px);
+            --blur-lg: blur(40px);
+            
+            /* Material 3 Radii */
+            --radius-pill: 50px;
+            --radius-card: 28px;
+            --radius-sm: 16px;
+
+            /* Typography */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            
+            /* Animation */
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-out: cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* --- Dynamic Aurora Background --- */
+        body {
+            min-height: 100vh;
+            background-color: #121212;
+            color: var(--text-primary);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* The Aurora Orbs */
+        .aurora {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            filter: var(--blur-lg);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite alternate ease-in-out;
+            opacity: 0.6;
+        }
+
+        .orb:nth-child(1) { width: 60vw; height: 60vw; background: #4285F4; top: -10%; left: -10%; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 50vw; height: 50vw; background: #EA4335; top: 40%; right: -10%; animation-delay: -5s; }
+        .orb:nth-child(3) { width: 55vw; height: 55vw; background: #34A853; bottom: -20%; left: 20%; animation-delay: -10s; }
+        .orb:nth-child(4) { width: 45vw; height: 45vw; background: #FBBC05; top: 10%; left: 40%; animation-delay: -15s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.2); }
+        }
+
+        /* --- Utility Classes --- */
+        .glass {
+            background: var(--glass-surface);
+            backdrop-filter: var(--blur-md);
+            -webkit-backdrop-filter: var(--blur-md);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Layout --- */
+        header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 24px;
+            animation: fadeDown 1s var(--ease-out) forwards;
+        }
+
+        .profile-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix') center/cover;
+            border: 2px solid var(--glass-border-light);
+            cursor: pointer;
+            transition: transform 0.3s var(--spring);
+        }
+        .profile-btn:hover { transform: scale(1.1); }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            transform: translateY(-5vh);
+        }
+
+        /* --- Widgets (Time & Greeting) --- */
+        .widget-area {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeUp 1s var(--ease-out) 0.1s forwards;
+            opacity: 0;
+        }
+
+        .time { font-size: 64px; font-weight: 300; letter-spacing: -2px; margin-bottom: 8px; }
+        .greeting { font-size: 24px; color: var(--text-secondary); font-weight: 400; }
+
+        /* --- Material Pill Search --- */
+        .search-wrapper {
+            width: 100%;
+            animation: fadeUp 1s var(--ease-out) 0.2s forwards;
+            opacity: 0;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            padding: 16px 28px;
+            border-radius: var(--radius-pill);
+            transition: all 0.4s var(--spring);
+        }
+
+        .search-bar:focus-within {
+            background: var(--glass-surface-hover);
+            border-color: var(--glass-border-light);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+            transform: scale(1.02);
+        }
+
+        .search-icon, .action-icon { fill: var(--text-secondary); width: 24px; height: 24px; transition: fill 0.3s; }
+        .action-icon { cursor: pointer; margin-left: 16px; border-radius: 50%; padding: 2px; }
+        .action-icon:hover, .search-bar:focus-within .search-icon { fill: var(--text-primary); }
+
+        .search-input {
+            flex: 1;
+            background: transparent; border: none; outline: none;
+            color: var(--text-primary); font-size: 20px; padding: 0 20px;
+        }
+        .search-input::placeholder { color: var(--text-secondary); }
+
+        /* --- Expanded Shortcuts Grid --- */
+        .shortcuts {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-top: 60px;
+            width: 100%;
+            animation: fadeUp 1s var(--ease-out) 0.3s forwards;
+            opacity: 0;
+        }
+
+        .shortcut-card {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; border-radius: var(--radius-card);
+            text-decoration: none; color: var(--text-primary);
+            transition: all 0.4s var(--spring);
+            gap: 16px;
+        }
+
+        .shortcut-card:hover {
+            background: var(--glass-surface-hover);
+            transform: translateY(-8px) scale(1.05);
+            border-color: var(--glass-border-light);
+        }
+
+        .shortcut-icon {
+            width: 56px; height: 56px;
+            border-radius: var(--radius-sm);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; font-weight: 600;
+            background: rgba(0,0,0,0.2);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1);
+        }
+
+        .shortcut-label { font-size: 14px; font-weight: 500; }
+
+        /* --- Animations --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .shortcuts { grid-template-columns: repeat(3, 1fr); }
+            .time { font-size: 48px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="aurora">
+        <div class="orb"></div><div class="orb"></div><div class="orb"></div><div class="orb"></div>
+    </div>
+
+    <header>
+        <div class="profile-btn" title="Google Account"></div>
+    </header>
+
+    <main>
+        <div class="widget-area">
+            <div class="time" id="clock">00:00</div>
+            <div class="greeting" id="greeting">Good day,</div>
+        </div>
+
+        <div class="search-wrapper">
+            <div class="glass search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ask anything..." autocomplete="off" autofocus>
+                <svg class="action-icon" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </div>
+        </div>
+
+        <div class="shortcuts">
+            <a href="https://mail.google.com" class="glass shortcut-card">
+                <div class="shortcut-icon" style="color: #EA4335;">M</div>
+                <span class="shortcut-label">Gmail</span>
+            </a>
+            <a href="https://youtube.com" class="glass shortcut-card">
+                <div class="shortcut-icon" style="color: #ff4b4b;">Y</div>
+                <span class="shortcut-label">YouTube</span>
+            </a>
+            <a href="https://drive.google.com" class="glass shortcut-card">
+                <div class="shortcut-icon" style="color: #34A853;">D</div>
+                <span class="shortcut-label">Drive</span>
+            </a>
+            <a href="https://calendar.google.com" class="glass shortcut-card">
+                <div class="shortcut-icon" style="color: #4285F4;">C</div>
+                <span class="shortcut-label">Calendar</span>
+            </a>
+            <a href="#" class="glass shortcut-card">
+                <div class="shortcut-icon" style="color: #FBBC05;">+</div>
+                <span class="shortcut-label">Add New</span>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // 1. Live Clock & Dynamic Greeting
+        function updateTime() {
+            const now = new Date();
+            const timeElement = document.getElementById('clock');
+            const greetingElement = document.getElementById('greeting');
+            
+            // Format Time (e.g., 09:47)
+            timeElement.textContent = now.toLocaleTimeString('en-US', {
+                hour: '2-digit', minute: '2-digit', hour12: false
+            });
+
+            // Dynamic Greeting based on time
+            const hour = now.getHours();
+            let greetingText = "Good evening";
+            if (hour >= 5 && hour < 12) greetingText = "Good morning";
+            else if (hour >= 12 && hour < 18) greetingText = "Good afternoon";
+            
+            greetingElement.textContent = `${greetingText}, welcome back.`;
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime(); // Run immediately
+
+        // 2. Functional Search Engine
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && this.value.trim() !== '') {
+                // Creates a real Google Search query
+                const query = encodeURIComponent(this.value.trim());
+                window.location.href = `https://www.google.com/search?q=${query}`;
+            }
+        });
+    </script>
+</body>
+</html>
